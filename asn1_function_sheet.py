@@ -72,7 +72,26 @@ def cohortCompare(df, cohorts, statistics=['mean', 'median', 'std', 'min', 'max'
     This function takes a dataframe and a list of cohort column names, and returns a dictionary
     where each key is a cohort name and each value is an object containing the specified statistics
     """
-    pass
+    results = {} # Initialize the empty Dictionary
+
+    for col in cohorts: # Loop through eahc column
+        cohort_metric = CohortMetric(col) # Create an Object for the current column
+        
+        # Calculate statistics
+        if 'mean' in statistics:
+            cohort_metric.setMean(df[col].mean())
+        if 'median' in statistics:
+            cohort_metric.setMedian(df[col].median())
+        if 'std' in statistics:
+            cohort_metric.setStd(df[col].std())
+        if 'min' in statistics:
+            cohort_metric.setMin(df[col].min())
+        if 'max' in statistics:
+            cohort_metric.setMax(df[col].max())
+            
+        results[col] = cohort_metric # Add the CohortMetric object to the results dictionary with the column name as key
+        
+    return results # Return the dictionary
   
 
 class CohortMetric():
