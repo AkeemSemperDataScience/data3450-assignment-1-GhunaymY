@@ -18,7 +18,7 @@ def age_splitter(df, col_name, age_threshold):
         - df_above_equal: DataFrame with rows where age is above or equal to the threshold.
     """
     # Using .copy() to ensure a seperate data frame is created.
-    
+
     df_below = df[df[col_name] < age_threshold].copy() # Select the Rows in Col_name that are lower than the threshold
     df_above_equal = df[df[col_name] >= age_threshold].copy() # Select the Rows in Col_name that are greather than or equal to the threshold
     return df_below, df_above_equal # Return both of the dataframes as a tuple
@@ -37,12 +37,35 @@ def effectSizer(df, num_col, cat_col):
     Raises:
     ValueError: If the categorical column does not have exactly two unique values.
     """
-    pass
+    unique_values = df[cat_col].unique() # Grab all the unique values in the cat_col
+    if len(unique_values) != 2: # Ensure two unique values
+        raise ValueError("Categorical column must have exactly two unique values.")
+
+    # Assign the Two Groups
+    group1_val = unique_values[0]
+    group2_val = unique_values[1]
+    
+    group1 = df[df[cat_col] == group1_val][num_col] # Select numerical values corresponding to the first group
+    group2 = df[df[cat_col] == group2_val][num_col] # Select numerical values corresponding to the second group
+
+    return cohenEffectSize(group1, group2) # Calculate and return Cohen's d effect size between the two groups
 
 def cohenEffectSize(group1, group2):
     # You need to implement this helper function
     # This should not be too hard...
-    pass
+
+    diff = group1.mean() - group2.mean() # Calculate the difference in means
+
+    # Calculate the pooled standard deviation
+    n1, n2 = len(group1), len(group2) # Number of observations in each group
+    s1, s2 = group1.std(), group2.std() # Get the Standard Deviation of Each Group
+
+    # Formula for Pooled Standard Deviation: sqrt [ ((n1-1)*s1^2 + (n2-1)*s2^2) / (n1 + n2 - 2) ]
+    pooled_std = math.sqrt(((n1 - 1) * s1**2 + (n2 - 1) * s2**2) / (n1 + n2 - 2))
+    d = diff / pooled_std
+    
+    return d # Return the Effect Size
+
 
 def cohortCompare(df, cohorts, statistics=['mean', 'median', 'std', 'min', 'max']):
     """
