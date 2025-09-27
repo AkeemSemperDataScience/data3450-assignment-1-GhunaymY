@@ -1,4 +1,4 @@
-from asn1_function_sheet import age_splitter
+from asn1_function_sheet import age_splitter, cohenEffectSize
 import pandas as pd
 import numpy as np
 import pytest
@@ -20,3 +20,10 @@ def test_age_splitter_2():
     df_below, df_above_equal = age_splitter(df, 'age', 30)
     assert all(df_below['age'] < 30)
     assert all(df_above_equal['age'] >= 30)
+
+def test_cohen_effectsize_1():
+    group1 = pd.Series([1, 2, 3])
+    group2 = pd.Series([4, 5, 6])
+    d = cohenEffectSize(group1, group2)
+    assert isinstance(d, float)
+    assert d < 0  # group1 mean < group2 mean
